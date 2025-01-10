@@ -12,7 +12,7 @@ pub fn match_example() -> () {
         Action::MoveTo(x, y) => x,
         _ => 0,
     };
-    println!("    1.mode bound: {:#?}", x_coor);
+    println!("    1.mode bind: {:#?}", x_coor);
 
     if_let_example(5);
 
@@ -44,7 +44,7 @@ pub fn match_example() -> () {
     }
 
     let p = (String::from("aa"), String::from("bb"));
-    // print_coordinates(&p); // This has error, because String not implement Copy
+    print_coordinates(&p); // This has error, because String not implement Copy
     print_coordinates_2(p);
 
     let a = Some(5);
@@ -120,9 +120,9 @@ pub fn match_example() -> () {
     };
 }
 
-// fn print_coordinates(&(x, y): &(String, String)) {
-//     println!("mode &(x, y) match: ({}, {})", x, y);
-// }
+fn print_coordinates((x, y): &(String, String)) {
+    println!("mode &(x, y) match: ({}, {})", x, y);
+}
 
 fn print_coordinates_2((x, y) : (String, String)) {
     println!("mode (x, y) match: ({}, {})", x, y);

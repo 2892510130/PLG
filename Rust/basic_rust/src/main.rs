@@ -1,11 +1,12 @@
+//! This is a basic rust example cluster
 #![allow(unused_variables)]
 
-use example::{impl_example, match_example};
 use time::OffsetDateTime;
 
 mod example;
 mod hybird_type;
 // use hybird_type; // It is not correct, use is for crates not self made modules
+use example::hello::hello_from_subdir;
 
 struct NumberStruct {
     e: i32,
@@ -90,20 +91,42 @@ fn main() {
     // 23. sub dir
     println!("");
     println!("------------ Sub Directory Example ------------");
-    example::hello::hello_from_subdir();
+    hello_from_subdir();
     example::hi::hi_from_subdir();
 
     // 24. hybird type examples
     hybird_type::hybird_type_examples();
 
     // 25. match example
-    match_example::match_example();
+    example::match_example::match_example();
 
     // 26. impl example
-    impl_example::impl_example();
+    example::impl_example::impl_example();
+
+    // 27. collection and lifetime example
+    example::collect_and_lifetime::collect_and_lifetime_example();
+
+    // 28. error example
+    example::error_example::error_example();
+
+    // 29. crate package example
+    println!("");
+    println!("------------ Crate and Package Example ------------");
+    println!("    Just see the last example    ");
+    println!("use crate:: or super:: or self:: to get some mod or fn in mod....");
+    println!("use pub(crate) or pub(crate::some_mod) to constraint the observability....");
 
 }
 
+/** `add` will add two i32 value
+# Example
+```
+let arg1 = 5_i32;
+let arg2 = 6_i32;
+let ans = add(arg1, arg2);
+assert_eq!(11, ans);
+```
+ */
 fn add(left: i32, right: i32) -> i32 {
     left + right // we can ignore return
 }
@@ -154,7 +177,7 @@ fn ownnership() -> () {
     let length = un_changeable_ref(&z_new);
     println!("len is {}", length);
 
-    // 20. mutable ref, in the same scope can not exist 2 or more mut ref
+    // 20. mutable ref, in the same scope can not exist 2 or more mut ref of same obj
     let mut z_st = String::from("Hello");
     mutable_ref(&mut z_st);
     println!("new string: {}", z_st);
@@ -184,7 +207,7 @@ fn takes_and_return_ownnership(s: String) -> String {
 
 fn un_changeable_ref(s: &String) -> usize {
     // s.push_str(", world"); // error here
-    s.len()
+    s.len() // method will do the deref for you, you don't need (*s).len()
 }
 
 fn mutable_ref(s: &mut String) -> () {

@@ -7,7 +7,7 @@ fn slice_example() -> () {
     println!("s1 is : {}", s1);
 
     // 1. slice
-    let s2: &str = &s1[1..=2]; // note that this return a &str not a String!! This is implemented by deref.
+    let s2 = &s1[1..=2]; // note that this return a &str not a String!! This is implemented by deref.
     println!("s1 is : {}", s2); // can not use *s2, the size for values of type `str` cannot be known at compilation time
     // let s3 = s1[1..2]; // some error
     println!("first letter in s1 is : {}", s1.chars().nth(0).unwrap());
@@ -47,6 +47,15 @@ fn slice_example() -> () {
     //                     The linebreak and indentation here ->\  // use \ to get rid of \n
     //                     <- can be escaped too!";
     // println!("{}", long_string);
+
+    // Read this one! self in the bottom is a &String, *self is String, and String impl Deref which return &str.
+    // funtion fmt takes a &T, where T impl Display. &str impl the Display, so we need to add & to make it &**self.
+    // impl fmt::Display for String {
+    //     #[inline]
+    //     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    //         fmt::Display::fmt(&**self, f)
+    //     }
+    // }
 }
 
 #[derive(Debug)]

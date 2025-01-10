@@ -1,2 +1,2 @@
 # PLG
-Programming Languages Learning
+Programming Languages Gym
