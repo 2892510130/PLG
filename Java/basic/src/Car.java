@@ -16,7 +16,7 @@ class Car {
         }
 
         static void print_type() {
-            System.out.println("static var: " + m_type);
+            System.out.println("static var is stored in Method Area (diff from heap and stack, jvm memory which load ones): " + m_type);
         }
     }
 
