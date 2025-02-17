@@ -1,2 +1,5 @@
 build
 target
+log
+Log
+__pycache__
