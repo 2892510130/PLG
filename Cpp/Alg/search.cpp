@@ -86,7 +86,7 @@ int binary_search_insert(const vector<int> & vec, int val)
         if (vec[m] < val) left = m + 1;
         // else if (vec[m] > val) right = m - 1;
         // else return m;
-        else right = m - 1; // This can handle the duplicated item in vec
+        else right = m - 1; // This can handle the duplicated item in vec, if we want the leftest one
     }
 
     return left;

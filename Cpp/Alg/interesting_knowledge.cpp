@@ -117,9 +117,16 @@ int main()
     void (*fun_ptr_with_arg)(int a, int b) = test_fun;
     fun_ptr_with_arg(4, 5);
 
-
+    // 11. pay attention to the c style 'string' function, or just don't use it.
     char ca[] = {'C','P','P'};
     // cout << strlen(ca) << endl; // undefined behavior, strlen will tries to find space
+
+    // 12. define multiple pointer
+    int* ak, bk; // bk is not pointer hhhhhhhh, you need to int* ak, *bk;
+
+    cout << "Hello" << "\n";
+    cout << "World" << "\r\n"; // it is the same in windows, maybe OS or compiler handles it
+    // but in binary out put file, this may different
 }
 
 constexpr int get_size()
