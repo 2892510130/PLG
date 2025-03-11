@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <random>
+// #include <mt19937>
 
 using namespace std;
 
@@ -8,6 +10,8 @@ int binary_search_lcro(const vector<int> & vec, int val); // l closed, r open
 int binary_search_insert(const vector<int> & vec, int val);
 int binary_search_left_edge(const vector<int> & vec, int val);
 int binary_search_right_edge(const vector<int> & vec, int val);
+int quick_select(vector<int>& nums, int left, int right, int k);
+int partion(vector<int> & v, bool reverse, int left, int right);
 
 int main()
 {
@@ -39,6 +43,9 @@ int main()
     cout << index << endl;
     index = binary_search_right_edge(a, 4);
     cout << index << endl;
+
+    vector<int> b = {3,2,3,1,2,4,5,5,6};
+    quick_select(b, 0, b.size() - 1, 5);
 }
 
 int binary_search(const vector<int> & vec, int val)
@@ -108,4 +115,44 @@ int binary_search_right_edge(const vector<int> & vec, int val) // or we can sear
     if (index == -1 || vec[index] != val) return -1;
 
     return index;
+}
+
+int quick_select(vector<int>& nums, int left, int right, int k)
+{
+    if (left >= right) return nums[k];
+
+    int p = partion(nums, false, left, right);
+    for (auto & i : nums) cout << i << " | ";
+    cout << p << '\n';
+    if (p > k) return quick_select(nums, left, p - 1, k);
+    else if (p < k) return quick_select(nums, p + 1, right, k);
+    else return nums[p];
+}
+
+int partion(vector<int> & v, bool reverse, int left, int right)
+{
+    int i = left, j = right;
+    mt19937 gen(0);
+    uniform_int_distribution<int> dist(left, right);
+    int mid = dist(gen);
+    swap(v[left], v[mid]);
+    int p = v[left];
+    while (i < j)
+    {
+        while (i < j && ((!reverse && v[j] >= p) || (reverse && v[j] <= p)))
+        {
+            j--;
+        }
+
+        while (i < j && ((!reverse && v[i] <= p) || (reverse && v[i] >= p)))
+        {
+            i++;
+        }
+
+        // if (i >= j) break;
+        
+        swap(v[i], v[j]);
+    }
+    swap(v[i], v[left]);
+    return i;
 }

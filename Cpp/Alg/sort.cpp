@@ -10,8 +10,11 @@ void selection_sort(vector<int> & v, bool reverse);
 void bubble_sort(vector<int> & v, bool reverse);
 void insertion_sort(vector<int> & v, bool reverse);
 void quick_sort(vector<int> & v, bool reverse, int left, int right);
+void quick_sort_2(vector<int> & v, bool reverse, int left, int right); // put elements both sides equally and deal with duplicated item
+void quick_sort_3(vector<int> & v, bool reverse, int left, int right); // put items close to the center, decrease the stack size
 int median(vector<int> & v, int left, int median, int right);
 int partion(vector<int> & v, bool reverse, int left, int right);
+int partion_2(vector<int> & v, bool reverse, int left, int right);
 void merge(vector<int> & v, bool reverse, int left, int mid, int right);
 void merge_sort(vector<int> & v, bool reverse, int left, int right);
 void shift_down(vector<int> & v, bool reverse, int n, int i);
@@ -45,6 +48,18 @@ int main()
     quick_sort(v, false, 0, v.size() - 1);
     print_vector(v);
     quick_sort(v, true, 0, v.size() - 1);
+    print_vector(v);
+    
+    cout << "\nQuick sort 2: " << endl;
+    quick_sort_2(v, false, 0, v.size() - 1);
+    print_vector(v);
+    quick_sort_2(v, true, 0, v.size() - 1);
+    print_vector(v);
+
+    cout << "\nQuick sort 3: " << endl;
+    quick_sort_3(v, false, 0, v.size() - 1);
+    print_vector(v);
+    quick_sort_3(v, true, 0, v.size() - 1);
     print_vector(v);
 
     cout << "\nMerge sort: " << endl;
@@ -165,9 +180,10 @@ int partion(vector<int> & v, bool reverse, int left, int right)
     int i = left, j = right;
 
     // optimize the selected term, i.e the left, so we can sort (reversed) orderd list faster.
+    // we can also random select
     int mid = median(v, left, (left + right) / 2, right);
     swap(v[left], v[mid]);
-    while (i < j)
+    while (true)
     {
         while (i < j && ((!reverse && v[j] >= v[left]) || (reverse && v[j] <= v[left])))
         {
@@ -178,11 +194,83 @@ int partion(vector<int> & v, bool reverse, int left, int right)
         {
             i++;
         }
+
+        if (i >= j) break;
         
         swap(v[i], v[j]);
     }
     swap(v[i], v[left]);
     return i;
+}
+
+int partion_2(vector<int> & v, bool reverse, int left, int right)
+{
+    int i = left + 1, j = right;
+
+    // optimize the selected term, i.e the left, so we can sort (reversed) orderd list faster.
+    int mid = median(v, left, (left + right) / 2, right);
+    swap(v[left], v[mid]);
+    // int p = v[left]; // seems like we don't need this
+    while (true)
+    {
+        while (i <= right && ((!reverse && v[i] < v[left]) || (reverse && v[i] > v[left])))
+        {
+            i++;
+        }
+
+        while (j > left && ((!reverse && v[j] > v[left]) || (reverse && v[j] < v[left])))
+        {
+            j--;
+        }
+
+        if (i > j) break;
+        
+        swap(v[i], v[j]);
+        i++;
+        j--;
+    }
+    swap(v[j], v[left]);
+    return j;
+}
+
+void quick_sort_2(vector<int> & v, bool reverse, int left, int right)
+{
+    if (left >= right) return;
+    int p = partion_2(v, reverse, left, right);
+    quick_sort_2(v, reverse, left, p - 1);
+    quick_sort_2(v, reverse, p + 1, right);
+
+}
+
+void quick_sort_3(vector<int> & v, bool reverse, int left, int right)
+{
+    if (left >= right) return;
+    int mid = median(v, left, (left + right) / 2, right);
+    swap(v[left], v[mid]);
+    int p = v[left];
+    int i = left, j = right + 1, k = left + 1;
+
+    while (k < j)
+    {
+        if ((!reverse && v[k] < p) || (reverse && v[k] > p))
+        {
+            i++;
+            swap(v[k], v[i]);
+            k++;
+        }
+        else if (v[k] == p)
+        {
+            k++;
+        }
+        else
+        {
+            j--;
+            swap(v[k], v[j]);
+        }
+    }
+    swap(v[left], v[i]);
+    quick_sort_3(v, reverse, left, i - 1); // we save a lot of the divide space here
+    quick_sort_3(v, reverse, j, right); // we save a lot of the divide space here
 }
 
 void quick_sort(vector<int> & v, bool reverse, int left, int right)
