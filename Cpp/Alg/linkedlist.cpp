@@ -2,15 +2,19 @@
 
 using namespace std;
 
-struct ListNode 
-{
-    int val;
-    ListNode* next;
-    ListNode(int var): val(var), next(nullptr) {};
+struct ListNode {
+	int val;
+	ListNode *next;
+	ListNode() : val(0), next(nullptr) {}
+	ListNode(int x) : val(x), next(nullptr) {}
+	ListNode(int x, ListNode *next) : val(x), next(next) {}
 };
 
 ListNode* merge_sort(ListNode* left, ListNode* right);
 ListNode* merge(ListNode* l1, ListNode* l2);
+void print_linked_list(ListNode* node);
+ListNode* reverse_linked_list(ListNode* node);
+ListNode* reverseBetween(ListNode* head, int left, int right) ;
 
 int main(int argc, char* argv[])
 {
@@ -22,7 +26,59 @@ int main(int argc, char* argv[])
     n1->next = n2;
     n2->next = n3;
     cout << n0->next->val << endl;
-    merge_sort(n0, nullptr);
+    print_linked_list(n0);
+    auto sorted_node = merge_sort(n0, nullptr);
+    print_linked_list(sorted_node);
+    auto reversed_node = reverse_linked_list(sorted_node);
+    print_linked_list(reversed_node);
+}
+
+ListNode* reverse_linked_list(ListNode* node)
+{
+    // ListNode* dummy = new ListNode(-1);
+    ListNode* cur = node;
+    ListNode* prev = nullptr;
+    while (cur)
+    {
+        ListNode* next = cur->next;
+        cur->next = prev;
+        prev = cur;
+        cur = next;
+    }
+    return prev;
+}
+
+ListNode* reverseBetween(ListNode* head, int left, int right) 
+{
+	ListNode* dummy = new ListNode(-1);
+	dummy->next = head;
+	ListNode* prev = dummy;
+	for (int i = 0; i < left - 1; ++i)
+	{
+		prev = prev->next;
+	}
+
+	ListNode* cur = prev->next;
+	ListNode* next;
+	for (int i = 0; i < right - left; ++i)
+	{
+		next = cur->next;
+		cur->next = next->next;
+		next->next = prev->next;
+		prev->next = next;
+	}
+	return dummy->next;
+}
+
+
+void print_linked_list(ListNode* node)
+{
+    while (node != nullptr)
+    {
+        cout << node->val << " ";
+        node = node->next;
+    }
+    cout << '\n';
 }
 
 ListNode* merge_sort(ListNode* left, ListNode* right)

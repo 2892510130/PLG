@@ -14,7 +14,7 @@ void print_node_iter(TreeNode* node, TraversalOrder order)
 
     while (!s.empty() || tmp != nullptr)
     {
-        if (tmp != nullptr)
+        if (tmp != nullptr) // can be written as a while too, see below
         {
             s.push(tmp);
             if (order == TraversalOrder::DepthFirstPreOrder) cout << tmp->m_val << endl;
@@ -52,6 +52,53 @@ void print_node_iter(TreeNode* node, TraversalOrder order)
         }
     }
 }
+
+void print_node_iter2(TreeNode* node, TraversalOrder order) 
+{
+    stack<TreeNode*> s;
+    TreeNode* tmp = node;
+    TreeNode* pre_visited = nullptr;
+
+    while (!s.empty() || tmp != nullptr)
+    {
+        while (tmp != nullptr) // can be written as a while too, see below
+        {
+            s.push(tmp);
+            if (order == TraversalOrder::DepthFirstPreOrder) cout << tmp->m_val << endl;
+            tmp = tmp->m_left;
+        }
+        
+		// TreeNode* pop_node = s.top();
+		tmp = s.top();
+		if (order == TraversalOrder::DepthFirstPostOrder)
+		{
+			if (tmp->m_right == nullptr || tmp->m_right == pre_visited)
+			{
+				s.pop();
+				cout << tmp->m_val << endl;
+				pre_visited = tmp;
+				tmp = nullptr;
+			}
+			else
+			{
+				tmp = tmp->m_right;
+			}
+		}
+		else if (order == TraversalOrder::DepthFirstInOrder)
+		{
+			s.pop();
+			cout << tmp->m_val << endl;
+			tmp = tmp->m_right;
+		}
+		else if (order == TraversalOrder::DepthFirstPreOrder)
+		{
+			s.pop();
+			tmp = tmp->m_right;
+		}
+    }
+}
+
+
 
 void print_node(TreeNode* node, TraversalOrder order)
 {
