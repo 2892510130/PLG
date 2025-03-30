@@ -12,6 +12,7 @@ public:
     {
         cout << "Base assign\n";
         i = other.i;
+        return *this;
     };
 
     int i;
@@ -29,6 +30,7 @@ public:
         cout << "Derived assign\n";
         j = other.j;
         i = other.i;
+        return *this;
     };
 
     int j;
@@ -37,12 +39,14 @@ public:
 class Base2 {
     public:
       virtual void fun() { cout << "Base Fun\n"; }
+      void fun2() { cout << "Base fun2\n"; }
       //   friend int main();
 };
     
 class Derived2 : public Base2 {
 private:
     void fun() { cout << "Derived Fun\n"; }
+    void fun2() { cout << "Derived fun2\n"; }
 };
     
 int main() {
@@ -50,10 +54,12 @@ int main() {
     // Derived *Var = new Derived();
     delete Var;
 
-    Base2 *ptr = new Derived2;
+    Base2 *ptr = new Derived2();
     ptr->fun();
+    ptr->fun2();
 
     cout << "--------- assign order: \n";
+    
     Derived d(1, 2);
     Derived d2(3, 4);
     d2 = d;

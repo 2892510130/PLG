@@ -41,6 +41,26 @@
         "stdexcept": "cpp",
         "streambuf": "cpp",
         "typeinfo": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "cstring": "cpp",
+        "functional": "cpp",
+        "iterator": "cpp",
+        "map": "cpp",
+        "numeric": "cpp",
+        "strstream": "cpp",
+        "bit": "cpp",
+        "charconv": "cpp",
+        "compare": "cpp",
+        "concepts": "cpp",
+        "ctime": "cpp",
+        "set": "cpp",
+        "source_location": "cpp",
+        "format": "cpp",
+        "numbers": "cpp",
+        "span": "cpp",
+        "stdfloat": "cpp",
+        "text_encoding": "cpp",
+        "cinttypes": "cpp",
+        "variant": "cpp"
     }
 }

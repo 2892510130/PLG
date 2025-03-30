@@ -2,14 +2,14 @@
     "tasks": [
         {
             "type": "cppbuild",
-            "label": "C/C++: g++.exe build active file",
-            "command": "C:\\Users\\pc\\Desktop\\Tools\\mingw64\\bin\\g++.exe",
+            "label": "task g++",
+            "command": "C:\\Users\\pc\\Desktop\\Tools\\Mingw64-latest\\mingw64\\bin\\g++.exe",
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
                 "${file}",
                 "-o",
-                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+                "${fileDirname}\\${fileBasenameNoExtension}",
             ],
             "options": {
                 "cwd": "${fileDirname}"
