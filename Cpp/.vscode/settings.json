@@ -61,6 +61,17 @@
         "stdfloat": "cpp",
         "text_encoding": "cpp",
         "cinttypes": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "thread": "cpp",
+        "ratio": "cpp",
+        "semaphore": "cpp",
+        "stop_token": "cpp",
+        "chrono": "cpp",
+        "iomanip": "cpp",
+        "condition_variable": "cpp",
+        "mutex": "cpp",
+        "shared_mutex": "cpp",
+        "future": "cpp",
+        "list": "cpp"
     }
 }

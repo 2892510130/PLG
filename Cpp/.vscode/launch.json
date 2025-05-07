@@ -19,7 +19,7 @@
                     "ignoreFailures": true
                 },
             ],
-            "preLaunchTask": "task g++" 
+            // "preLaunchTask": "task g++" 
         }
     ],
     "version": "2.0.0"

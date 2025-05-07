@@ -3,13 +3,17 @@
         {
             "type": "cppbuild",
             "label": "task g++",
-            "command": "C:\\Users\\pc\\Desktop\\Tools\\Mingw64-latest\\mingw64\\bin\\g++.exe",
+            "command": "g++",
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
+                "-Wall",
+                "-Wextra",
                 "${file}",
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}",
+                "&&",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe",
             ],
             "options": {
                 "cwd": "${fileDirname}"

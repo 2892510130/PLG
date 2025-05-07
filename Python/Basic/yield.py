@@ -11,3 +11,5 @@ if __name__ == "__main__":
 
     for number in counter:
         print(number)
+
+    print("pylsp is working!")

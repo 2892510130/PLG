@@ -61,7 +61,7 @@ void print_node_iter2(TreeNode* node, TraversalOrder order)
 
     while (!s.empty() || tmp != nullptr)
     {
-        while (tmp != nullptr) // can be written as a while too, see below
+        while (tmp != nullptr)
         {
             s.push(tmp);
             if (order == TraversalOrder::DepthFirstPreOrder) cout << tmp->m_val << endl;
