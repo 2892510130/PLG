@@ -7,7 +7,7 @@ class SingletonEasy
     public:
         static SingletonEasy &get_inst()
         {
-            static SingletonEasy single;
+            static SingletonEasy single; // it is of class SingletonEasy so it do not need defination outside the class
             return single;
         }
     
@@ -49,8 +49,8 @@ class Singleton
         }
 };
 
-template<typename T>
-std::shared_ptr<T> Singleton<T>::m_instance = nullptr;
+template<typename T> // add this to link the instance, static var need to be define outside the class, though it has claim
+std::shared_ptr<T> Singleton<T>::m_instance = nullptr; // for c++ 17, we can derict add inline and define it inside the class
 
 class LogicSystem : public Singleton<LogicSystem>
 {

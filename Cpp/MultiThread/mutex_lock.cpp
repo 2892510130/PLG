@@ -31,7 +31,7 @@ class ThreadSafeStack
 {
     private:
         std::stack<T> m_stack;
-        mutable std::mutex m_mtx; // allow lock in const function
+        mutable std::mutex m_mtx; // mutable allows lock in const function
     
     public:
         ThreadSafeStack() {};
@@ -54,7 +54,7 @@ class ThreadSafeStack
         {
             std::lock_guard<std::mutex> lock(m_mtx);
             if (m_stack.empty()) throw empty_stack();
-            value = m_stack.top();
+            value = std::move(m_stack.top());
             m_stack.pop();
         }
 
@@ -63,7 +63,7 @@ class ThreadSafeStack
             std::lock_guard<std::mutex> lock(m_mtx);
             // if (m_stack.empty()) throw empty_stack();
             if (m_stack.empty()) return nullptr;
-            std::shared_ptr<T> pointer(std::make_shared<T>(m_stack.top()));
+            std::shared_ptr<T> pointer(std::make_shared<T>(std::move(m_stack.top())));
             m_stack.pop();
             return pointer;
         }
