@@ -1,6 +1,6 @@
 ## Cargo Basic
 
-We change the ~/.cargo/config.toml to use the ustc mirror rather than the crate.io (ref: rust cook book ch)
+We change the ~/.cargo/config.toml to use the ustc mirror rather than the crate.io (ref: aliyun mirror and rust cook book ch)
 
 1. build and run a project
 

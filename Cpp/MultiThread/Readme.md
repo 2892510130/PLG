@@ -8,7 +8,7 @@ Folder and File structure:
 5.  safe_queue
 6.  future_promise_async
 7.  thread_pool
-8.  quick_sort_mutli_thread
+8.  quick_sort_mutli_thread (see parallel_alg.h too)
 9.  actor_csp
 10. atomic_memory_model (and no_lock_queue with circular queue)
 11. fence
@@ -19,6 +19,9 @@ Folder and File structure:
 16. hazard_pointer
 17. ref_count_lockfree_stack
 18. lockfree_queue (it's not circular queue)
+19. task_divide
+20. parallel_alg.h
+20. interrupt_thread.h
 
 Important:
 - Use {} to constraint the scope of the lock and mutex
@@ -28,6 +31,8 @@ Important:
 - fetch_add will return value before add
 - release -> write in same thread / read-modify-write in any order in any thread -> acquire, release sync with acquire
     - for any release model of atomic M, any read-modify-write with any model can read the latest M.
+- std::condition_variable only work one std::unique_lock<std::mutex>, but std::condition_variable_any works on any
+lock meets BasicLockable requirement.
 
 Principle:
 1. first use seq_cst order, then optimize.
