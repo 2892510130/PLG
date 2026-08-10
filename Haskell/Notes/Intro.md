@@ -1,5 +1,9 @@
 ### Important
-Type and data constructor names must always start with a capital letter; variables (including names of functions) must always start with a lowercase letter.
+- Type and data constructor names must always start with a capital letter; variables (including names of functions) must always start with a lowercase letter.
+- Constructors are functions in Haskell.
+- :l or :load to load a .hs file in ghci, :t someThing to get the type
+- () can decide the order of the function: f (g x) first apply g then f, we can use $ to reduce (), and . to composition which is different
+- function arrow -> is right-associative, a -> b -> c means a -> (b -> c), see the Curry section below
 
 ### Functional
 - Functions are **first-class**, aka, functions are values.
@@ -31,7 +35,14 @@ Which will benifit us:
 - Abstraction can reduce the repetation of the code
 - Wholemeal programming: develop a solution space, rather than an individual solution.
 - Projective programming: complemented wholemeal programming, first solve a more general problem, then extract the interesting bits and pieces by transforming the general program into more specialised ones.
+- This style of coding in which we define a function without reference to its arguments—in some sense saying what a function is rather than what it does—is known as **point-free** style.
 
 ### Literate Haskell
 - File end with .lhs (rather than .hs), the code must come after > and a space, other lines are all comments and documents.
 - This encourage programmer to think before code, and produce better document with lhs2TeX tools.
+
+### Currying
+- Functions in Haskell only takes one arguments!!!
+  - This idea of representing multi-argument functions as one-argument functions returning functions is known as currying, named after Haskell Curry.
+- right arrow is right associated, f :: Int -> Int -> Int is f :: Int -> (Int -> Int), which means f takes one Int arguments and return a function which is Int -> Int. Let f = 2 * x + y
+- function apply is left associated, f 3 4 is (f 3) 4, f 3 will return a function as we know Int -> Int, g = 2 * 3 + y, then g 4 will be Int which is 10.

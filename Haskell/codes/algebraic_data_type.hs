@@ -38,6 +38,9 @@ getAge :: Person -> Int
 getAge (Person _ a _) = a
 
 {-
+Constructors are functions in Haskell.
+data T = C T1 T2 ... Tn, then C :: T1 -> T2 -> ... -> Tn -> T
+
 More general algebraic data types:
 data AlgDataType = Constr1 Type11 Type12
                  | Constr2 Type21
@@ -60,6 +63,8 @@ data IntList = Empty | Cons Int IntList
     []                   Empty
     (:)                  Cons
     1 : 2 : []           Cons 1 (Cons 2 Empty)
+
+    data T = C T1 T2 ... Tn, then C :: T1 -> T2 -> ... -> Tn -> T
 
     So Cons Int IntList means:
     "A value built with Cons contains two things:
