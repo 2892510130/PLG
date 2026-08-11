@@ -24,6 +24,8 @@ myTest' = even . length . greaterThan100
 
 {-
     fold z f [1,2,3] = f 1 (f 2 (f 3 z))
+
+    And the official fold function is foldr
 -}
 fold :: b -> (a -> b -> b) -> [a] -> b
 fold z f []     = z

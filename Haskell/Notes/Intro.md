@@ -1,4 +1,5 @@
 ### Important
+- https://www.engineering.upenn.edu/~cis1940/spring13/lectures.html
 - Type and data constructor names must always start with a capital letter; variables (including names of functions) must always start with a lowercase letter.
 - Constructors are functions in Haskell.
 - :l or :load to load a .hs file in ghci, :t someThing to get the type
@@ -46,3 +47,30 @@ Which will benifit us:
   - This idea of representing multi-argument functions as one-argument functions returning functions is known as currying, named after Haskell Curry.
 - right arrow is right associated, f :: Int -> Int -> Int is f :: Int -> (Int -> Int), which means f takes one Int arguments and return a function which is Int -> Int. Let f = 2 * x + y
 - function apply is left associated, f 3 4 is (f 3) 4, f 3 will return a function as we know Int -> Int, g = 2 * 3 + y, then g 4 will be Int which is 10.
+
+### Laziness
+- Expressions are only evaluated when pattern-matched
+- only as far as necessary for the match to proceed, and no farther!
+- But laziness bring purity, and maybe not good, see this
+    - ```Haskell
+        foldl (+) 0 [1,2,3]
+        = foldl (+) (0+1) [2,3]
+        = foldl (+) ((0+1)+2) [3]
+        = foldl (+) (((0+1)+2)+3) []
+        = (((0+1)+2)+3)
+        = ((1+2)+3)
+        = (3+3)
+        = 6
+        ```
+    - Laziness will first get (((0+1)+2)+3), it is slow, and it will put them in stack and may create stack overflow
+    - So foldl' give us different implement which will do this:
+    - ```Haskell
+        foldl' (+) 0 [1,2,3]
+        = foldl' (+) (0+1) [2,3]
+        = foldl' (+) 1 [2,3]
+        = foldl' (+) (1+2) [3]
+        = foldl' (+) 3 [3]
+        = foldl' (+) (3+3) []
+        = foldl' (+) 6 []
+        = 6
+        ```
