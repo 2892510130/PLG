@@ -35,4 +35,4 @@ sum''     = fold 0 (+)
 product'' = fold 1 (*)
 length''  = fold 0 (\_ s -> 1 + s)
 
-strFold = fold "" (\x acc -> show x ++ acc) [1,2,3] -- differnet type
+strFold = fold "" (\x acc -> show x ++ acc) [1,2,3] -- differnet type of a and b

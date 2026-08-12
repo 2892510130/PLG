@@ -5,6 +5,7 @@
 - :l or :load to load a .hs file in ghci, :t someThing to get the type
 - () can decide the order of the function: f (g x) first apply g then f, we can use $ to reduce (), and . to composition which is different
 - function arrow -> is right-associative, a -> b -> c means a -> (b -> c), see the Curry section below
+- a `f` b == f a b
 
 ### Functional
 - Functions are **first-class**, aka, functions are values.
@@ -74,3 +75,14 @@ Which will benifit us:
         = foldl' (+) 6 []
         = 6
         ```
+
+### Monoids
+- What is monoids:
+  - A list of elements
+  - One binary operator
+  - One identity element
+  - Associative law
+- What is semigroup: (without the identity element)
+  - A list of elements
+  - One binary operator
+  - Associative law
