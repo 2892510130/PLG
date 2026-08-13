@@ -5,7 +5,7 @@
 - :l or :load to load a .hs file in ghci, :t someThing to get the type
 - () can decide the order of the function: f (g x) first apply g then f, we can use $ to reduce (), and . to composition which is different
 - function arrow -> is right-associative, a -> b -> c means a -> (b -> c), see the Curry section below
-- a `f` b == f a b
+- a \`f\` b == f a b
 
 ### Functional
 - Functions are **first-class**, aka, functions are values.
@@ -86,3 +86,24 @@ Which will benifit us:
   - A list of elements
   - One binary operator
   - Associative law
+
+### Pattern Match
+- pattern match on function arguments: clean
+  - ```
+    insert (Unknown _) tree = tree
+    insert logMsg Leaf = ...
+    ```
+- guards: works for bool conditions
+  - ```
+    insert logMsg Leaf
+    | isImportant logMsg = ...
+    | otherwise = ...
+    ```
+- case of: when you need to match inside a function body
+  - ```
+    insert logMsg tree = case logMsg of
+    Unknown _ -> tree
+    LogMessage typ ts msg -> ...
+    ```
+- Lambda
+- Let
