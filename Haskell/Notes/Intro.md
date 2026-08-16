@@ -2,7 +2,7 @@
 - https://www.engineering.upenn.edu/~cis1940/spring13/lectures.html
 - Type and data constructor names must always start with a capital letter; variables (including names of functions) must always start with a lowercase letter.
 - Constructors are functions in Haskell.
-- :l or :load to load a .hs file in ghci, :t someThing to get the type
+- :l or :load to load a .hs file in ghci, :t someThing to get the type, :k for the type of type, :! to run command
 - () can decide the order of the function: f (g x) first apply g then f, we can use $ to reduce (), and . to composition which is different
 - function arrow -> is right-associative, a -> b -> c means a -> (b -> c), see the Curry section below
 - a \`f\` b == f a b
@@ -89,21 +89,28 @@ Which will benifit us:
 
 ### Pattern Match
 - pattern match on function arguments: clean
-  - ```
+  - ```Haskell
     insert (Unknown _) tree = tree
     insert logMsg Leaf = ...
     ```
 - guards: works for bool conditions
-  - ```
+  - ```Haskell
     insert logMsg Leaf
     | isImportant logMsg = ...
     | otherwise = ...
     ```
 - case of: when you need to match inside a function body
-  - ```
+  - ```Haskell
     insert logMsg tree = case logMsg of
     Unknown _ -> tree
     LogMessage typ ts msg -> ...
     ```
 - Lambda
 - Let
+
+### Functor
+- `fmap id = id`, for example
+  - `fmap id (Just 5) == Just 5`
+- `fmap (f . g) = fmap f . fmap g`
+  - `fmap ((+1) . (*2)) [1,2,3] == fmap (+1) (fmap (*2) [1,2,3])`
+- `<$>` this is the infix version of `fmap`
