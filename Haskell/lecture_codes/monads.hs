@@ -12,4 +12,39 @@ class Monad m where
     m1 >> m2 = m1 >>= \_ -> m2
 
 Monad is also Applicative, that pure = return.
+
+The core is the bind operation:
+    (>>=) :: m a -> (a -> m b) -> m b
+It will take a `mobit` m a and then calculate the result a, and then based on this a we do next calculation.
+And the default (>>) will ignore the first result.
 -}
+
+check :: Int -> Maybe Int
+check n | n < 10    = Just n
+        | otherwise = Nothing
+
+halve :: Int -> Maybe Int
+halve n | even n    = Just $ n `div` 2
+        | otherwise = Nothing
+
+ex01 = return 6 >>= check >>= halve   -- Just 3
+ex02 = return 12 >>= check >>= halve  -- Nothing
+ex03 = return 12 >>= halve >>= check  -- Just 6
+
+addOneOrTwo :: Int -> [Int]
+addOneOrTwo x = [x+1, x+2]
+
+ex04 = [10,20,30] >>= addOneOrTwo
+-- 结果：[11,12,21,22,31,32]
+
+{-
+sequence :: Monad m => [m a] -> m [a]
+sequence [] = return []
+sequence (ma:mas) =
+  ma >>= \a ->
+  sequence mas >>= \as ->
+  return (a:as)
+-}
+
+replicateM :: Monad m => Int -> m a -> m [a]
+replicateM n m = sequence (replicate n m)
