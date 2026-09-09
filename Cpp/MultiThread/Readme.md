@@ -1,6 +1,22 @@
-ref: https://www.yuque.com/lianlianfengchen-cvvh2.
+## Important Notes
+- This notes use `thread` but after c++ 20 we use `jthread` instead as it auto `join` and have built-in interuption.
+- Use {} to constraint the scope of the lock and mutex
+- when use cond var first lock (and before wait we must use unique_lock because wait will unlock)
+- when use detach we must make sure the main thread will not end too early
+- compare_exchange will do bit-wise compare!
+- fetch_add will return value before add
+- release -> write in same thread / read-modify-write in any order in any thread -> acquire, release sync with acquire
+    - for any release model of atomic M, any read-modify-write with any model can read the latest M.
+- std::condition_variable only work one std::unique_lock<std::mutex>, but std::condition_variable_any works on any
+lock meets BasicLockable requirement.
 
-Folder and File structure:
+## How to build?
+- If you are using MinGW then run `python setup.py` in the MultiThread folder, if not modify the setup.py (or you can build yourself).
+
+## References
+- The lesson: https://www.yuque.com/lianlianfengchen-cvvh2.
+
+## Folder and File structure
 1.  thread
 2.  thread_control
 3.  mutex_lock
@@ -15,26 +31,15 @@ Folder and File structure:
 12. thread_safe_containter
 13. safe_map
 14. safe_list
-15. no_lock_stack
+15. no_lock_stack | no_lock_queue
 16. hazard_pointer
 17. ref_count_lockfree_stack
-18. lockfree_queue (it's not circular queue)
+18. lockfree_queue | lockfree_stack (it's not circular queue)
 19. task_divide
 20. parallel_alg.h
 20. interrupt_thread.h
 
-Important:
-- Use {} to constraint the scope of the lock and mutex
-- when use cond var first lock (and before wait we must use unique_lock because wait will unlock)
-- when use detach we must make sure the main thread will not end too early
-- compare_exchange will do bit-wise compare!
-- fetch_add will return value before add
-- release -> write in same thread / read-modify-write in any order in any thread -> acquire, release sync with acquire
-    - for any release model of atomic M, any read-modify-write with any model can read the latest M.
-- std::condition_variable only work one std::unique_lock<std::mutex>, but std::condition_variable_any works on any
-lock meets BasicLockable requirement.
-
-Principle:
+## Principle
 1. first use seq_cst order, then optimize.
 2. always keep memory if some thread maybe working on it.
     1. free memory when data structur is freed

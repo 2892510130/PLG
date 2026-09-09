@@ -173,11 +173,12 @@ int main()
             4.3 mutex can not be moved but unique_lock can
             4.4 some func or operation does not access to the shared data, do not put them into lock, and unique_lock is good
                 for this because it can unlock manually
-        5. shared_lock : read can be done by muliple threads, they are not exclusive. read and write is, write and write is.
-            so read needs shared lock, and write need unique (owned) lock.
-            5.1 shared_mutex and shared_timed_mutex (will set a timeout, if in this timeout it can not get lock return false)
-            5.2 use shared_lock to hold shared_mutex for read
-            5.3 use lock_guard to hold shared_mutex for write
+        5. shared_lock and shadred_mutex : 
+            5.1 read can be done by muliple threads, they are not exclusive. read and write is, write and write is.
+                so read (only) needs shared lock, and write need unique (owned) lock.
+            5.2 shared_mutex and shared_timed_mutex (will set a timeout, if in this timeout it can not get lock return false)
+            5.3 use shared_lock to hold shared_mutex for read
+            5.4 use lock_guard to hold shared_mutex for write
         6. recursive lock : sometimes we need lock something and into another interface (see func use_own_defer) and stack
             here we can use recursive lock.
             6.1 However we should avoid this, from a design level try to lock the interface altogether
@@ -258,7 +259,7 @@ void use_own_adopt()
 
 void use_own_defer() 
 {
-    std::unique_lock<std::mutex>  lock(mtx1);
+    std::unique_lock<std::mutex> lock(mtx1);
 
     if (lock.owns_lock())
     {
@@ -293,6 +294,7 @@ void use_own_defer()
         }
 
         lock.unlock();
-        });
+        }
+    );
     t.join();
 }

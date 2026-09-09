@@ -19,6 +19,7 @@ struct accumulate_block
 
 template<typename Iterator, typename T>
 T parallel_accumulate(Iterator first, Iterator last, T init);
+
 void use_parallel_acc();
 void non_parallel_acc();
 
@@ -26,7 +27,7 @@ int main()
 {
     /*
         Thread Control:
-        1. can not move a thread to a thread var already binded
+        1. can not move a thread to a thread already binded to task
         2. joining thread : join when deconstruct (std::thread will not, it will terminate)
         3. in container use emplace back not push back (it will call copy constructor, but thread do not have one)
         4. std::thread::hardware_concurrency() get the system core number 

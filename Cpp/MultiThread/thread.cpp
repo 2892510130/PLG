@@ -79,6 +79,7 @@ int main()
             6.2 RAII way -- thread guard (not a lock guard)
         7.  be careful with the implicit convert (see function danger_ops)
         8.  reference param : must use std::ref
+            thread and jthread will take param as right value so if we want to send left value we need the std::ref wrapper.
         9.  bind class func : must use &, and the arg is the &instance
         10. we can use move but can not copy
     */
@@ -151,6 +152,7 @@ void danger_ops(int _param)
     sprintf(buffer, "%i", _param);
     // std::thread t(thread_work_1, buffer); // if we use this and do not add a wait at the end, we will lose buffer in thread
     // code above only save buffer into the t member, and only when t starts to work buffer will send to the worker function
+    // and maybe danger_ops already done so the data in buffer is gone.
     std::thread t(thread_work_2, std::string(buffer)); // However this will not have the same problem, why?
     t.detach();
     std::cout << "dnager ops finished\n";
@@ -196,6 +198,6 @@ void deal_unique(std::unique_ptr<int> p)
 
 void move_oops() {
     auto p = std::make_unique<int>(100);
-    std::thread  t(deal_unique, std::move(p));
+    std::thread t(deal_unique, std::move(p));
     t.join();
 }
