@@ -34,10 +34,10 @@ lock meets BasicLockable requirement.
 15. no_lock_stack | no_lock_queue
 16. hazard_pointer
 17. ref_count_lockfree_stack
-18. lockfree_queue | lockfree_stack (it's not circular queue)
+18. lockfree_queue (it's not circular queue)
 19. task_divide
 20. parallel_alg.h
-20. interrupt_thread.h
+21. interrupt_thread.h
 
 ## Principle
 1. first use seq_cst order, then optimize.

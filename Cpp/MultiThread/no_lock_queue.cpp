@@ -211,94 +211,86 @@ class CircularQueueSeq : private std::allocator<T>
 template<typename T, size_t Cap>
 class CircularQueueLight : private std::allocator<T>
 {
-    public:
-        CircularQueueLight() : m_size(Cap + 1), m_data(std::allocator<T>::allocate(m_size)), m_head(0), m_tail(0) {}
-        CircularQueueLight(const CircularQueueLight&) = delete;
-        CircularQueueLight& operator=(const CircularQueueLight&) = delete;
-        CircularQueueLight& operator=(const CircularQueueLight&) volatile = delete;
+public:
+    CircularQueueLight()
+        : m_size(Cap + 1),
+          m_data(std::allocator<T>::allocate(m_size)),
+          m_head(0), m_tail(0) {}
 
-        ~CircularQueueLight()
+    CircularQueueLight(const CircularQueueLight&) = delete;
+    CircularQueueLight& operator=(const CircularQueueLight&) = delete;
+
+    ~CircularQueueLight()
+    {
+        // SPSC 场景，析构时无并发，直接销毁
+        while (m_head.load(std::memory_order_relaxed) !=
+               m_tail.load(std::memory_order_relaxed))
         {
-            while (m_head.load() != m_tail.load())
-            {
-                size_t h = m_head.load();
-                std::allocator<T>::destroy(m_data + h);
-                m_head.compare_exchange_strong(h, (h + 1) % m_size, std::memory_order_release, std::memory_order_relaxed);
-            }
-            
-            std::allocator<T>::deallocate(m_data, m_size);
+            size_t h = m_head.load(std::memory_order_relaxed);
+            std::allocator<T>::destroy(m_data + h);
+            m_head.store((h + 1) % m_size, std::memory_order_relaxed);
+        }
+        std::allocator<T>::deallocate(m_data, m_size);
+    }
+
+    template<typename ...Args>
+    bool emplace(Args&& ...args)
+    {
+        const size_t t = m_tail.load(std::memory_order_relaxed);
+        const size_t next = (t + 1) % m_size;
+
+        // acquire 读 head，确保看到消费者的推进
+        if (next == m_head.load(std::memory_order_acquire))
+        {
+            std::cout << "circular queue full!\n";
+            return false;
         }
 
-        template<typename ...Args>
-        bool emplace(Args && ... args)
+        // 先构造，再发布 tail —— 顺序不能反
+        std::allocator<T>::construct(m_data + t, std::forward<Args>(args)...);
+
+        // release 发布：保证 construct 对消费者可见
+        m_tail.store(next, std::memory_order_release);
+        return true;
+    }
+
+    bool push(const T& val)
+    {
+        std::cout << "called push const T& version\n";
+        return emplace(val);
+    }
+
+    bool push(T&& val)
+    {
+        std::cout << "called push T&& version\n";
+        return emplace(std::move(val));
+    }
+
+    bool pop(T& val)
+    {
+        const size_t h = m_head.load(std::memory_order_relaxed);
+
+        // acquire 读 tail，确保看到生产者的 construct
+        if (h == m_tail.load(std::memory_order_acquire))
         {
-            size_t t;
-
-            do
-            {
-                t = m_tail.load(std::memory_order_relaxed); // use relaxed because we will check it again in while, if it's diff, do this again
-                if ((t + 1) % m_size == m_head.load(std::memory_order_acquire))
-                {
-                    std::cout << "circular queue full!" << std::endl;
-                    return false;
-                }
-            }
-            while (!m_tail.compare_exchange_strong(t, (t + 1) % m_size, std::memory_order_release, std::memory_order_relaxed));
-
-            std::allocator<T>::construct(m_data + t, std::forward<Args>(args)...);
-            
-            size_t tail_up;
-            do
-            {
-                tail_up = t;
-            }
-            while (m_tail_update.compare_exchange_strong(tail_up, (tail_up + 1) % m_size, std::memory_order_release, std::memory_order_relaxed));
-            return true;
+            std::cout << "circular queue empty!\n";
+            return false;
         }
 
-        bool push(const T& val)
-        {
-            std::cout << "called push const T& version\n";
-            return emplace(val);
-        }
+        // 安全：tail 已 release 发布，元素一定构造完成
+        val = std::move(m_data[h]);
+        std::allocator<T>::destroy(m_data + h);
 
-        bool push(T&& val)
-        {
-            std::cout << "called push T&& version\n";
-            return emplace(std::move(val));
-        }
+        // release 发布 head 推进
+        m_head.store((h + 1) % m_size, std::memory_order_release);
+        return true;
+    }
 
-        bool pop(T& val)
-        {
-            size_t h;
-            do
-            {
-                h = m_head.load(std::memory_order_relaxed);
-                if (h == m_tail.load(std::memory_order_acquire))
-                {
-                    std::cout << "circular queue empty!\n";
-                    return false;
-                }
-
-                if (h == m_tail_update.load(std::memory_order_acquire)) // for case tail++, but did not finish construct
-                {
-                    std::cout << "tail not updated!\n";
-                    return false;
-                }
-
-                val = m_data[h]; // we can not use move, as maybe some thread will also be here, h is not the same (while cond not true)
-            }
-            while (!m_head.compare_exchange_strong(h, (h + 1) % m_size, std::memory_order_release, std::memory_order_relaxed));
-
-            return true;
-        }
-
-    private:
-        size_t m_size;
-        T* m_data;
-        std::atomic<size_t> m_head;
-        std::atomic<size_t> m_tail;
-        std::atomic<size_t> m_tail_update;
+private:
+    size_t m_size;
+    T* m_data;
+    std::atomic<size_t> m_head;
+    std::atomic<size_t> m_tail;
 };
 
 void test_seq()

@@ -65,3 +65,110 @@
 - `std::promise` can send a value or exception on a thread, can bind a future to get result
   - they are a pair, so when you free a promise you can not use the future (it will crash)
 - `std::shared_future` for multiple threads wait for a async task's result, can call `get` multiple times
+
+## thread pool
+- Easy implementation in thread.h, with magic static.
+- More complicated can see steal thread pool, like https://github.com/Lallapallooza/citor.
+
+## actor and csp
+- They are two design pattern
+  - do not communicate with shared memory, share memory with communicating!!
+- Actor does not need shared value, it only process one message one time, so it is safe.
+  - It knows who will receive and who give the message (has address). It may not need lock.
+- CSP (communicating sequential process): focus on the channel, know nothing about recevier and giver.
+
+## atomic memory model
+- For complicated scene, first consider mutex, if you have to use atomic, use `seq_cst`, then after you are sure, down to `acquire/release` or `relaxed`.
+- `std::atomic_flag` is the base class for other atomic class (only some basic type and pointer, and after c++ 20 smart pointer), they can make sure the atomic feature.
+  - `store`, `load`, `exchange` | RMW (read modify write) -> `fetch_*` like `fetch_add` | `compare_exchange_strong` and `compare_exchange_weak` (this often put in a while loop as it allows failure)
+  - ```cpp
+        void lock()
+        {
+            while (flag.test_and_set(std::memory_order_acquire)); // a spin lock
+        }
+
+        void unlock()
+        {
+            flag.clear(std::memory_order_release);
+        }
+    ```
+- We can set mode on the memory type
+- | Memory Order | Semantics | Typical Use |
+  |--------------|-----------|-------------|
+  | `memory_order_relaxed` | Atomicity only, no ordering guarantee | Counters, statistics |
+  | `memory_order_consume` | Dependency ordering (rarely used, not recommended) | Almost never used |
+  | `memory_order_acquire` | Read op: later reads/writes cannot be reordered before it | Locking, reading shared data |
+  | `memory_order_release` | Write op: earlier reads/writes cannot be reordered after it | Unlocking, publishing data |
+  | `memory_order_acq_rel` | Both acquire + release | CAS, RMW |
+  | `memory_order_seq_cst` | Global sequential consistency (default, strongest) | Simple and correct, slightly slower |
+- release + acquire -> ***synchronizes-with*** | cross thread visibility guarantees
+  - ***sequenced-before***, in thread order
+  - ***happens-before*** -> transitivity + synchronizes-with + sequenced-before
+  - A synchronizes-with B  ⟹  A happens-before B, but not reversed
+- Hardware Background: Multi-Core Cache Hierarchy
+    - Multiple CPU cores, each core has its own store buffer / L1 cache
+    - Two cores share an L2 cache
+    - All cores share L3 cache and main memory
+- How to ensure data consistency?
+    - MESI protocol, a Write-Invalidate protocol
+    - Only 1 CPU can write, others read
+    - After writing to cache, broadcast an "Invalidate" to all other CPU cores
+    - MESI has 4 states:
+        - M (Modified): modified locally, dirty, other CPUs' copies invalid
+        - E (Exclusive): only in this CPU's cache, clean, free to read/write
+        - S (Shared): present in multiple caches, clean, all can read
+            - To write, must first broadcast, invalidate all other copies
+            - Only 1 CPU can write
+            - However, all CPUs can read, so they may read old data (broadcast not yet arrived)
+            - So we need Memory Order
+        - I (Invalid): invalid, must fetch from memory or another cache
+- Summary
+    - MESI solves hardware-level cache coherence
+    - Memory Order solves software-level ordering and visibility
+
+## fence (memory barrier)
+- Forbid the cpu random re-order
+- ```cpp
+    x.store(true, std::memory_order_relaxed);  //1
+    std::atomic_thread_fence(std::memory_order_release);  //2, make sure 1 before 2
+    y.store(true, std::memory_order_relaxed);  //3
+    ```
+- ```cpp
+    while (!y.load(std::memory_order_relaxed));  //4
+    std::atomic_thread_fence(std::memory_order_acquire); //5, make sure 6 read after 5
+    if (x.load(std::memory_order_relaxed))  //6
+        ++z;
+    ```
+
+## lock free container and thread safe container
+- We can implement a circular queue (tail and head design) with lock, with atomic spin
+  - or we can CAS design to make pop and push do not block each other
+- We can use one lock and condition variable to make thread safe stack and queue
+- We can use two lock to implement thread safe queue (with linked list)
+- `template<typename Key, typename Value, typename Hash = std::hash<Key>>` as `class ThreadSafeLookupTable`
+  - we need the inner data type
+  - ```cpp
+        class BuckedType
+        {
+        private:
+            friend class ThreadSafeLookupTable;
+
+            typedef std::pair<Key, Value> bucket_value;
+            typedef std::list<bucket_value> bucket_data;
+            typedef typename bucket_data::iterator bucket_iterator;
+
+            bucket_data data;
+            mutable std::shared_mutex mutex;
+        }
+    ```
+- Safe list, no lock stack, no lock queue, lock free queue, lock free stack
+
+## hazard pointer
+- In no lock stack, we mentioned if always we have multiple threads pop, the node should be reclaimed may never reclaim, it's length will keep growing.
+  - so our approach is to let the last thread that pop do the reclaim, it's like GC. Each therad has it's own hazard pointer, other threads can not delete it.
+  - but we know GC like is slow! We have to walk through the hazard_pointer for outstanding_hazard_pointers_for. We can use some space trade for time tech, like create 2N hazard_pointer, only for n > N we do this walk.
+
+## ref count lock free stack
+- We know it is hard to safly delete a node in lock free stack
+- So we can use external (how many thread are holding/accessing this node) ref counter and internal ref counter to solve it
+- It is complicated, ref counter is expensive
