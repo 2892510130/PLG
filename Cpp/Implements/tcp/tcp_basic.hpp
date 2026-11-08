@@ -9,9 +9,12 @@
 #include <atomic>
 #include <thread>
 
+// Linux part
+#include <sys/socket.h>
+
 class SocketAddress {
 public:
-    static SocketAddress any(uint16_t port);                    // 0.0.0.0:port
+    static SocketAddress any(uint16_t port);
     static SocketAddress parse(const std::string& ip, uint16_t port);
 
     const sockaddr* data() const;
