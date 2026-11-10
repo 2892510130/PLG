@@ -26,17 +26,17 @@ int main() {
     server.setConnectionCallback([&](const TcpConnection::Ptr& c) {
         accepted++;
         std::cout << "[server] accepted: " << c->peer().ip()
-                  << ":" << c->peer().port() << "\n";
+                  << ":" << c->peer().port() << std::endl;
     });
 
     server.setMessageCallback([&](const TcpConnection::Ptr& c, const std::string& msg) {
-        std::cout << "[server] recv: " << msg << "\n";
+        std::cout << "[server] recv: " << msg << std::endl;
         c->send(encodeMessage("echo:" + msg));   // 回显
     });
 
     server.setCloseCallback([&](const TcpConnection::Ptr& c) {
         closedByServer++;
-        std::cout << "[server] closed: " << c->peer().ip() << "\n";
+        std::cout << "[server] closed: " << c->peer().ip() << std::endl;
         std::lock_guard<std::mutex> lk(cvMtx);
         cv.notify_all();
     });
@@ -44,7 +44,7 @@ int main() {
     std::thread serverThread([&] {
         try { server.start(); }
         catch (const std::exception& e) {
-            std::cerr << "[server] start() threw: " << e.what() << "\n";
+            std::cerr << "[server] start() threw: " << e.what() << std::endl;
         }
     });
 
@@ -73,7 +73,7 @@ int main() {
     // 1) connect
     assert(client.connect(SocketAddress::parse("127.0.0.1", kPort), 2000));
     assert(client.connected());
-    std::cout << "[client] connected\n";
+    std::cout << "[client] connected" << std::endl;
 
     // 2) send + 收 echo
     client.send("hello");
@@ -83,7 +83,7 @@ int main() {
         assert(ok && "timeout waiting for echo");
         assert(received == "echo:hello");
     }
-    std::cout << "[client] got: " << received << "\n";
+    std::cout << "[client] got: " << received << std::endl;
 
     // 3) 再发一条，验证解帧循环正常工作
     received.clear();
@@ -93,7 +93,7 @@ int main() {
         bool ok = clientCv.wait_for(lk, 2s, [&] { return !received.empty(); });
         assert(ok && received == "echo:world");
     }
-    std::cout << "[client] got: " << received << "\n";
+    std::cout << "[client] got: " << received << std::endl;
 
     // 4) client 主动关闭 → server 应收到 onClose
     client.close();

@@ -13,3 +13,5 @@ target_link_libraries(tcp_basic PUBLIC Threads::Threads)
 
 add_executable(tcp_test test_server_client.cpp)
 target_link_libraries(tcp_test PRIVATE tcp_basic)
+
+add_executable(tcp_main main.cpp)
