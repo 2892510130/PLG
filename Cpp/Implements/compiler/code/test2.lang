@@ -1,0 +1,30 @@
+fn fib(n: i32) -> i32 {
+    if n < 2 {
+        return n;
+    }
+    return fib(n - 1) + fib(n - 2);
+}
+
+fn main() -> i32 {
+    print("fib(10) =", fib(10));
+
+    let mut sum = 0;
+    let mut i = 1;
+    while i <= 10 {
+        sum = sum + i;
+        i = i + 1;
+    }
+    print("sum 1..10 =", sum);
+
+    let flag = true;
+    if flag {
+        print("flag is true");
+    } else {
+        print("flag is false");
+    }
+
+    let pi = 3.14;
+    print("pi =", pi, "| two =", 2.0);
+
+    return 0;
+}
